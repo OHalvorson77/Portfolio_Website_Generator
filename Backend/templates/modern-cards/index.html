@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{name}} - Portfolio</title>
+  <style>
+    body { font-family: Arial; background: #f4f4f4; margin: 0; padding: 2rem; }
+    .card { background: white; padding: 1rem; margin: 1rem 0; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+  </style>
+</head>
+<body>
+  <h1>{{name}}</h1>
+  <p>{{bio}}</p>
+
+  <h2>Projects</h2>
+  {{#each projects}}
+    <div class="card">
+      <h3>{{title}}</h3>
+      <p>{{description}}</p>
+      <a href="{{link}}" target="_blank">View Project</a>
+    </div>
+  {{/each}}
+
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:{{email}}">{{email}}</a></p>
+</body>
+</html>

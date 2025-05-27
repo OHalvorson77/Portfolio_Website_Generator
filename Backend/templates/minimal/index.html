@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{name}}</title>
+  <style>
+    body { font-family: monospace; text-align: center; padding: 5% 10%; }
+    a { color: #000; text-decoration: none; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>{{name}}</h1>
+  <p>{{bio}}</p>
+
+  <h2>Projects</h2>
+  {{#each projects}}
+    <p><a href="{{link}}" target="_blank">{{title}}</a>: {{description}}</p>
+  {{/each}}
+
+  <p>Contact: <a href="mailto:{{email}}">{{email}}</a></p>
+</body>
+</html>

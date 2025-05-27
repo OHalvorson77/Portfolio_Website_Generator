@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>{{name}} - Portfolio</title>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; line-height: 1.6; }
+    h1, h2 { border-bottom: 1px solid #ddd; }
+    ul { padding: 0; list-style: none; }
+  </style>
+</head>
+<body>
+  <h1>{{name}}</h1>
+  <p>{{bio}}</p>
+
+  <h2>Skills</h2>
+  <ul>
+    {{#each skills}}<li>{{this}}</li>{{/each}}
+  </ul>
+
+  <h2>Projects</h2>
+  {{#each projects}}
+    <div>
+      <strong>{{title}}</strong><br/>
+      {{description}}<br/>
+      <a href="{{link}}" target="_blank">View</a>
+    </div>
+  {{/each}}
+
+  <h2>Contact</h2>
+  <p>Email: <a href="mailto:{{email}}">{{email}}</a></p>
+</body>
+</html>

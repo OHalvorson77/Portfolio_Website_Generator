@@ -6,17 +6,20 @@ const path = require('path');
 const archiver = require('archiver');
 const simpleGit = require('simple-git');
 
-const express = require("express");
 const bodyParser = require("body-parser");
-const { Configuration, OpenAIApi } = require("openai");
+const { OpenAI } = require("openai");
 
 require("dotenv").config();
 const app = express();
+
+const cors = require("cors");
+
+app.use(cors());
 app.use(bodyParser.json());
-const config = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
+
+const openai = new OpenAI({
 });
-const openai = new OpenAIApi(config);
+
 
 
 
@@ -58,7 +61,6 @@ app.post('/deploy/github', async (req, res) => {
     res.status(500).json({ success: false, error: err.message });
   }
 });
-
 app.post("/api/analyze", async (req, res) => {
   const message = req.body.message;
 
@@ -76,23 +78,27 @@ Return JSON with fields:
 `;
 
   try {
-    const completion = await openai.createChatCompletion({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
-        { role: "system", content: "You are a helpful assistant that extracts structured data from descriptions." },
-        { role: "user", content: gptPrompt },
-      ],
+        {
+          role: "system",
+          content: "You are a helpful assistant that extracts structured data from descriptions."
+        },
+        {
+          role: "user",
+          content: gptPrompt
+        }
+      ]
     });
 
-    const aiResponse = completion.data.choices[0].message.content;
+    const aiResponse = completion.choices[0].message.content;
 
-    // Try to parse the response as JSON (GPT often returns a JSON string)
     try {
       const parsed = JSON.parse(aiResponse);
       res.json(parsed);
     } catch (jsonErr) {
-      // If it's not parsable JSON, just send the raw content
-      res.send(aiResponse);
+      res.send(aiResponse); // fallback if not valid JSON
     }
 
   } catch (err) {
@@ -101,6 +107,6 @@ Return JSON with fields:
   }
 });
 
-
-
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
 

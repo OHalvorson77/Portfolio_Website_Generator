@@ -25,16 +25,20 @@ const openai = new OpenAI({
 
 
 app.post('/generate', async (req, res) => {
-  const userData = req.body; // name, projects, templateChoice, etc.
   
-  const templateDir = path.join(__dirname, 'templates', userData.template);
-  const outputDir = path.join(__dirname, 'output', userData.username);
+  const { siteData, template } = req.body;
+  const {name, bio, skills, projects, education, experience}=siteData;
+
+
+  
+  const templateDir = path.join(__dirname, 'templates', template);
+  const outputDir = path.join(__dirname, 'output', 'test');
 
   await fs.copy(templateDir, outputDir);
 
   const templateHtml = await fs.readFile(path.join(outputDir, 'index.html'), 'utf-8');
   const compiled = handlebars.compile(templateHtml);
-  const rendered = compiled(userData);
+  const rendered = compiled(siteData);
 
   await fs.writeFile(path.join(outputDir, 'index.html'), rendered);
 
@@ -96,6 +100,7 @@ Return JSON with fields:
 
     try {
       const parsed = JSON.parse(aiResponse);
+      console.log(parsed);
       res.json(parsed);
     } catch (jsonErr) {
       res.send(aiResponse); // fallback if not valid JSON

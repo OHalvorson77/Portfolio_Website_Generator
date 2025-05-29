@@ -1,30 +1,36 @@
 import React, { useState } from "react";
 import Form from "./components/Form";
-import TemplateSelector from "./components/TemplateSelector";
 import Result from "./components/Result";
+import FreeformInput from "./components/FreeFormInput"; // 👈 Import it
 import { generateSite } from "./api";
 
 function App() {
   const [formData, setFormData] = useState({});
-  const [template, setTemplate] = useState("classic");
   const [deployedURL, setDeployedURL] = useState(null);
 
-  const handleSubmit = async () => {
-    const result = await generateSite({ ...formData, template });
-    setDeployedURL(result.url);
+  // 👇 Merge AI-generated data with existing form data
+  const handleStructuredData = (structured) => {
+    setFormData((prev) => ({
+      ...prev,
+      ...structured,
+    }));
   };
+
+  
 
   return (
     <div className="p-8 max-w-3xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">Portfolio Website Generator</h1>
-      <Form setFormData={setFormData} />
-      <TemplateSelector template={template} setTemplate={setTemplate} />
-      <button
-        onClick={handleSubmit}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded"
-      >
-        Generate & Deploy
-      </button>
+
+      {/* 👇 Freeform AI Assistant */}
+      <FreeformInput setStructuredData={handleStructuredData} />
+
+      
+
+
+
+
+      {/* 👇 Deployment result */}
       {deployedURL && <Result url={deployedURL} />}
     </div>
   );

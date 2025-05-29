@@ -1,10 +1,14 @@
 import React, { useState, useRef } from "react";
-import { analyzeDescription } from "../api";
+import { analyzeDescription, generateSite } from "../api";
+import TemplateSelector from "./TemplateSelector";
+
 
 export default function FreeformInput({ setStructuredData }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [template, setTemplate] = useState("classic");
+  
   const recognitionRef = useRef(null);
 
   const startListening = () => {
@@ -43,7 +47,9 @@ export default function FreeformInput({ setStructuredData }) {
   const handleAnalyze = async () => {
     setLoading(true);
     const result = await analyzeDescription(text);
+    console.log(result);
     setStructuredData(result);
+    generateSite(result, template)
     setLoading(false);
   };
 
@@ -75,7 +81,10 @@ export default function FreeformInput({ setStructuredData }) {
         >
           {loading ? "Analyzing..." : "Generate with AI"}
         </button>
+
+
       </div>
+       <TemplateSelector template={template} setTemplate={setTemplate} />
     </div>
   );
 }

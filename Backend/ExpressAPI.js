@@ -69,17 +69,24 @@ app.post("/api/analyze", async (req, res) => {
   const message = req.body.message;
 
   const gptPrompt = `
-Extract portfolio data from this description:
+You are a professional web developer AI assistant.
+
+Based on the following description of a person's background, generate a full, standalone HTML file for their portfolio website. 
+The site must include modern, responsive design, good visual hierarchy, and embedded CSS (no external stylesheets).
+Use semantic HTML5 and apply styling with <style> tags.
+Ensure the site includes:
+- Header with name and bio
+- Section for skills (as badges or list)
+- Section for projects (title, description, link)
+- Section for education
+- Section for experience
+- A clean footer
+
+Here is the description:
 ${message}
 
-Return JSON with fields:
-- name
-- bio
-- skills (array)
-- projects (array of {title, description, link})
-- education (array of {school, degree, years})
-- experience (array of {title, company, duration})
-`;
+Return ONLY the full HTML (starting with <!DOCTYPE html> and including all <html>, <head>, <style>, and <body> content).
+  `;
 
   try {
     const completion = await openai.chat.completions.create({
@@ -87,7 +94,7 @@ Return JSON with fields:
       messages: [
         {
           role: "system",
-          content: "You are a helpful assistant that extracts structured data from descriptions."
+          content: "You are a helpful assistant that generates full HTML portfolio websites based on user descriptions."
         },
         {
           role: "user",
@@ -96,21 +103,18 @@ Return JSON with fields:
       ]
     });
 
-    const aiResponse = completion.choices[0].message.content;
+    const htmlOutput = completion.choices[0].message.content;
+    console.log(htmlOutput);
 
-    try {
-      const parsed = JSON.parse(aiResponse);
-      console.log(parsed);
-      res.json(parsed);
-    } catch (jsonErr) {
-      res.send(aiResponse); // fallback if not valid JSON
-    }
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlOutput);
 
   } catch (err) {
     console.error("Error calling OpenAI:", err);
-    res.status(500).send("Error generating portfolio data");
+    res.status(500).send("Error generating portfolio site");
   }
 });
+
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));

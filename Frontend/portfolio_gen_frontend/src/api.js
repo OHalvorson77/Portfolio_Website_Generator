@@ -13,6 +13,11 @@ export async function analyzeDescription(text) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ message: text }),
   });
-  return await res.json();
+
+  const html = await res.text();
+  
+  console.log(html); // not JSON anymore
+  return html;
 }
+
 

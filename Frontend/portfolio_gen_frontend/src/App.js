@@ -16,19 +16,12 @@ function App() {
     }));
   };
 
-  
-
   return (
-    <div className="p-8 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Portfolio Website Generator</h1>
+    <div className="app-container">
+      <h1 className="app-title">Portfolio Website Generator</h1>
 
       {/* 👇 Freeform AI Assistant */}
       <FreeformInput setStructuredData={handleStructuredData} />
-
-      
-
-
-
 
       {/* 👇 Deployment result */}
       {deployedURL && <Result url={deployedURL} />}

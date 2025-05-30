@@ -1,94 +1,96 @@
-/* Reset and base styles */
-body {
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap');
+
+body, html, #root {
+  height: 100%;
   margin: 0;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: #f9fafb;
-  color: #1f2937;
-  line-height: 1.5;
-}
-
-h1 {
-  font-size: 2rem;
-  font-weight: 600;
-  margin-bottom: 1rem;
-  color: #111827;
-}
-
-input,
-textarea,
-select,
-button {
-  font-family: inherit;
-  font-size: 1rem;
-}
-
-a {
-  color: #2563eb;
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
-}
-
-/* Container styling */
-.container {
-  max-width: 768px;
-  margin: 2rem auto;
+  background: #0b0c17;
+  color: #00fff7;
+  font-family: 'Orbitron', monospace, monospace;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
   padding: 2rem;
-  background-color: white;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
 }
 
-/* Form elements */
-input[type="text"],
-input[type="email"],
-textarea,
-select {
-  display: block;
+.app-container {
+  background: #111421;
+  max-width: 700px;
   width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.25rem;
-  margin-bottom: 1rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.375rem;
-  background-color: #fff;
-  transition: border 0.2s ease;
+  padding: 2rem 3rem;
+  border-radius: 12px;
+  box-shadow:
+    0 0 10px #00fff7,
+    0 0 40px #00fff7 inset;
+  border: 1px solid #00fff7;
+  animation: neonGlow 3s ease-in-out infinite;
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  border-color: #2563eb;
-  outline: none;
+.app-title {
+  font-size: 2.5rem;
+  text-align: center;
+  margin-bottom: 2rem;
+  text-shadow:
+    0 0 5px #00fff7,
+    0 0 10px #00fff7,
+    0 0 20px #00fff7,
+    0 0 40px #00fff7;
 }
 
-textarea {
-  resize: vertical;
-}
-
-/* Button styling */
 button {
-  background-color: #2563eb;
-  color: white;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.375rem;
+  background: transparent;
+  border: 2px solid #00fff7;
+  color: #00fff7;
+  padding: 0.6rem 1.4rem;
+  font-weight: 700;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  box-shadow: 0 0 8px #00fff7;
 }
 
 button:hover {
-  background-color: #1d4ed8;
+  background: #00fff7;
+  color: #111421;
+  box-shadow:
+    0 0 20px #00fff7,
+    0 0 30px #00fff7,
+    0 0 40px #00fff7;
 }
 
-/* Result box */
-.result-box {
-  margin-top: 2rem;
-  background-color: #ecfdf5;
-  padding: 1rem;
-  border: 1px solid #34d399;
-  border-radius: 0.375rem;
-  color: #065f46;
+textarea, input {
+  background: #0b0c17;
+  border: 1px solid #00fff7;
+  color: #00fff7;
+  font-family: 'Orbitron', monospace, monospace;
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  width: 100%;
+  resize: vertical;
+  box-shadow: 0 0 8px #00fff7 inset;
+  transition: border-color 0.3s ease;
+}
+
+textarea::placeholder,
+input::placeholder {
+  color: #00fff7aa;
+}
+
+textarea:focus,
+input:focus {
+  border-color: #00fff7;
+  outline: none;
+  box-shadow:
+    0 0 10px #00fff7,
+    0 0 20px #00fff7 inset;
+}
+
+@keyframes neonGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px #00fff7, 0 0 40px #00fff7 inset;
+  }
+  50% {
+    box-shadow: 0 0 20px #00fff7, 0 0 60px #00fff7 inset;
+  }
 }

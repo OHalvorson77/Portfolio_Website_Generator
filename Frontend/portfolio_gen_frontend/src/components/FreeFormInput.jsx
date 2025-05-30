@@ -1,20 +1,21 @@
 import React, { useState, useRef } from "react";
-import { analyzeDescription, generateSite } from "../api";
+import { analyzeDescription } from "../api";
 import TemplateSelector from "./TemplateSelector";
-
 
 export default function FreeformInput({ setStructuredData }) {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
   const [template, setTemplate] = useState("classic");
-  
+  const [previewHtml, setPreviewHtml] = useState(null);
+
   const recognitionRef = useRef(null);
 
-  const startListening = () => {
+  // Initialize SpeechRecognition once on first start
+  const initRecognition = () => {
     if (!("webkitSpeechRecognition" in window)) {
       alert("Web Speech API not supported in this browser.");
-      return;
+      return null;
     }
 
     const SpeechRecognition = window.webkitSpeechRecognition;
@@ -35,22 +36,44 @@ export default function FreeformInput({ setStructuredData }) {
       setListening(false);
     };
 
-    recognitionRef.current = recognition;
-    recognition.start();
+    return recognition;
   };
 
-  const stopListening = () => {
-    recognitionRef.current?.stop();
-    setListening(false);
+  const toggleListening = () => {
+    if (listening) {
+      // Stop if currently listening
+      recognitionRef.current?.stop();
+      setListening(false);
+    } else {
+      // Start listening if not already started
+      if (!recognitionRef.current) {
+        recognitionRef.current = initRecognition();
+      }
+      recognitionRef.current?.start();
+    }
   };
 
   const handleAnalyze = async () => {
     setLoading(true);
-    const result = await analyzeDescription(text);
-    console.log(result);
-    setStructuredData(result);
-    generateSite(result, template)
+    setPreviewHtml(null);
+    try {
+      const html = await analyzeDescription(text);
+      setPreviewHtml(html);
+    } catch (error) {
+      alert("Error generating preview");
+      console.error(error);
+    }
     setLoading(false);
+  };
+
+  const handlePreview = () => {
+    const newWindow = window.open();
+    if (!newWindow) {
+      alert("Popup blocked! Please allow popups for this site.");
+      return;
+    }
+    newWindow.document.write(previewHtml);
+    newWindow.document.close();
   };
 
   return (
@@ -66,7 +89,7 @@ export default function FreeformInput({ setStructuredData }) {
 
       <div className="flex gap-2 mt-2">
         <button
-          onClick={listening ? stopListening : startListening}
+          onClick={toggleListening}
           className={`px-4 py-2 rounded text-white ${
             listening ? "bg-red-600" : "bg-indigo-600"
           }`}
@@ -82,9 +105,17 @@ export default function FreeformInput({ setStructuredData }) {
           {loading ? "Analyzing..." : "Generate with AI"}
         </button>
 
-
+        {previewHtml && (
+          <button
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+            onClick={handlePreview}
+          >
+            Preview
+          </button>
+        )}
       </div>
-       <TemplateSelector template={template} setTemplate={setTemplate} />
+
+      <TemplateSelector template={template} setTemplate={setTemplate} />
     </div>
   );
 }

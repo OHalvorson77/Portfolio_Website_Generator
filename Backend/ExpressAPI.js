@@ -67,12 +67,13 @@ app.post('/deploy/github', async (req, res) => {
 });
 app.post("/api/analyze", async (req, res) => {
   const message = req.body.message;
+  console.log("Reached");
 
   const gptPrompt = `
 You are a professional web developer AI assistant.
 
-Based on the following description of a person's background, generate a full, standalone HTML file for their portfolio website. 
-The site must include modern, responsive design, good visual hierarchy, and embedded CSS (no external stylesheets).
+Based on the following description of a person's background, generate a full, standalone HTML file and very themed with lots of colours and animations for their portfolio website. 
+The site must include modern, responsive design, good visual hierarchy, and embedded CSS and javascript (no external stylesheets or js files).
 Use semantic HTML5 and apply styling with <style> tags.
 Ensure the site includes:
 - Header with name and bio

@@ -1,31 +1,15 @@
-import React, { useState } from "react";
-import Form from "./components/Form";
-import Result from "./components/Result";
-import FreeformInput from "./components/FreeFormInput"; // 👈 Import it
-import { generateSite } from "./api";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import Home from './Pages/home.jsx';
+import PreviewPage from './Pages/preview';
 
 function App() {
-  const [formData, setFormData] = useState({});
-  const [deployedURL, setDeployedURL] = useState(null);
-
-  // 👇 Merge AI-generated data with existing form data
-  const handleStructuredData = (structured) => {
-    setFormData((prev) => ({
-      ...prev,
-      ...structured,
-    }));
-  };
-
   return (
-    <div className="app-container">
-      <h1 className="app-title">Portfolio Website Generator</h1>
-
-      {/* 👇 Freeform AI Assistant */}
-      <FreeformInput setStructuredData={handleStructuredData} />
-
-      {/* 👇 Deployment result */}
-      {deployedURL && <Result url={deployedURL} />}
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/preview" element={<PreviewPage />} />
+      </Routes>
+    </Router>
   );
 }
 

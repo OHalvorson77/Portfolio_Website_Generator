@@ -67,14 +67,30 @@ export default function FreeformInput({ setStructuredData }) {
   };
 
   const handlePreview = () => {
-    const newWindow = window.open();
-    if (!newWindow) {
-      alert("Popup blocked! Please allow popups for this site.");
-      return;
-    }
-    newWindow.document.write(previewHtml);
-    newWindow.document.close();
-  };
+  const newWindow = window.open();
+  if (!newWindow) {
+    alert("Popup blocked! Please allow popups for this site.");
+    return;
+  }
+
+  const improveAndDeployButtons = `
+    <div style="margin-top: 20px; display: flex; gap: 10px;">
+      <button onclick="window.opener.postMessage('improve', '*')" style="padding: 10px; background-color: orange; color: white; border: none; border-radius: 5px;">Improve</button>
+      <button onclick="window.opener.postMessage('deploy', '*')" style="padding: 10px; background-color: purple; color: white; border: none; border-radius: 5px;">Deploy</button>
+    </div>
+  `;
+
+  newWindow.document.write(`
+    <html>
+      <head><title>Preview</title></head>
+      <body style="font-family: sans-serif; padding: 20px;">
+        ${previewHtml}
+        ${improveAndDeployButtons}
+      </body>
+    </html>
+  `);
+  newWindow.document.close();
+};
 
   return (
     <div className="my-6">

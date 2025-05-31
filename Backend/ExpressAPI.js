@@ -17,7 +17,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(bodyParser.json());
 
-const openai = new OpenAI(
+const openai = new OpenAI({
 });
 
 
@@ -84,6 +84,53 @@ Ensure the site includes:
 - A clean footer
 
 Here is the description:
+${message}
+
+Return ONLY the full HTML (starting with <!DOCTYPE html> and including all <html>, <head>, <style>, and <body> content).
+  `;
+
+  try {
+    const completion = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [
+        {
+          role: "system",
+          content: "You are a helpful assistant that generates full HTML portfolio websites based on user descriptions."
+        },
+        {
+          role: "user",
+          content: gptPrompt
+        }
+      ]
+    });
+
+    const htmlOutput = completion.choices[0].message.content;
+    console.log(htmlOutput);
+
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlOutput);
+
+  } catch (err) {
+    console.error("Error calling OpenAI:", err);
+    res.status(500).send("Error generating portfolio site");
+  }
+});
+
+
+app.post("/api/update", async (req, res) => {
+  const code =req.body.code;
+  const message = req.body.message;
+  console.log("Reached");
+
+  const gptPrompt = `
+You are a professional web developer AI assistant.
+
+Based on the following code presentend, update it to fit the requested requirements. 
+
+Here is the code:
+${code}
+
+Here is the update requirements:
 ${message}
 
 Return ONLY the full HTML (starting with <!DOCTYPE html> and including all <html>, <head>, <style>, and <body> content).

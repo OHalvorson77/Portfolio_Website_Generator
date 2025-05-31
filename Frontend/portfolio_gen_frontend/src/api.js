@@ -20,4 +20,17 @@ export async function analyzeDescription(text) {
   return html;
 }
 
+export async function updateCode(text, code) {
+  const res = await fetch("http://localhost:3000/api/update", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message: text, code:code }),
+  });
+
+  const html = await res.text();
+  
+  console.log(html); // not JSON anymore
+  return html;
+}
+
 

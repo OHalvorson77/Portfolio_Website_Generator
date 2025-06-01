@@ -1,10 +1,12 @@
 const express = require('express');
-const multer = require('multer');
+
 const handlebars = require('handlebars');
 const fs = require('fs-extra');
 const path = require('path');
-const archiver = require('archiver');
-const simpleGit = require('simple-git');
+
+const axios = require('axios');
+const { v4: uuidv4 } = require('uuid');
+
 
 const bodyParser = require("body-parser");
 const { OpenAI } = require("openai");
@@ -17,8 +19,13 @@ const cors = require("cors");
 app.use(cors());
 app.use(bodyParser.json());
 
-const openai = new OpenAI({
-});
+
+
+
+app.use(express.json());
+
+const REPO_OWNER = 'OHalvorson77';
+const REPO_NAME = 'html-previews';
 
 
 
@@ -46,25 +53,36 @@ app.post('/generate', async (req, res) => {
 });
 
 
-
-app.post('/deploy/github', async (req, res) => {
-  const { username, repo, token } = req.body;
-  const localPath = path.join(__dirname, 'output', username);
-  const git = simpleGit();
+app.post('/deploy', async (req, res) => {
+  const { html } = req.body;
+  const filename = `${uuidv4()}.html`;
+  const contentEncoded = Buffer.from(html).toString('base64');
 
   try {
-    await git.cwd(localPath);
-    await git.init();
-    await git.addRemote('origin', `https://${token}@github.com/${username}/${repo}.git`);
-    await git.add('.');
-    await git.commit('Initial portfolio site');
-    await git.push(['-u', 'origin', 'main', '--force']);
-    res.json({ success: true, url: `https://${username}.github.io/${repo}` });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
+    const response = await axios.put(
+      `https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${filename}`,
+      {
+        message: `Deploy ${filename}`,
+        content: contentEncoded,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${GITHUB_TOKEN}`,
+          Accept: 'application/vnd.github+json',
+        },
+      }
+    );
+
+    const url = `https://${REPO_OWNER}.github.io/${REPO_NAME}/${filename}`;
+    res.json({ url });
+  } catch (error) {
+    console.error('Error uploading to GitHub:', error.response?.data || error.message);
+    res.status(500).json({ error: 'Failed to deploy HTML' });
   }
 });
+
+
+
 app.post("/api/analyze", async (req, res) => {
   const message = req.body.message;
   console.log("Reached");

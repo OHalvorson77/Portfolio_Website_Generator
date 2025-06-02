@@ -3,6 +3,9 @@ const express = require('express');
 const handlebars = require('handlebars');
 const fs = require('fs-extra');
 const path = require('path');
+const multer = require('multer');
+const pdfParse = require('pdf-parse');
+
 
 const axios = require('axios');
 const { v4: uuidv4 } = require('uuid');
@@ -15,17 +18,32 @@ require("dotenv").config();
 const app = express();
 
 const cors = require("cors");
+const upload = multer();
+
 
 app.use(cors());
 app.use(bodyParser.json());
 
-
+const openai = new OpenAI({apiKey:''
+});
 
 
 app.use(express.json());
 
+const GITHUB_TOKEN = '';
 const REPO_OWNER = 'OHalvorson77';
 const REPO_NAME = 'html-previews';
+
+
+app.post('/upload-resume', upload.single('resume'), async (req, res) => {
+  try {
+    const data = await pdfParse(req.file.buffer);
+    res.json({ text: data.text });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Failed to parse PDF");
+  }
+});
 
 
 

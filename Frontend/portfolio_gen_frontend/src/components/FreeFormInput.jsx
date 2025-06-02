@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { analyzeDescription } from "../api";
+import { analyzeDescription, uploadResumePdf } from "../api";
 import TemplateSelector from "./TemplateSelector";
 import { useNavigate } from 'react-router-dom';
 
@@ -10,11 +10,12 @@ export default function FreeformInput({ setStructuredData }) {
   const [listening, setListening] = useState(false);
   const [template, setTemplate] = useState("classic");
   const [previewHtml, setPreviewHtml] = useState(null);
+  const [uploading, setUploading] = useState(false);
 
   const recognitionRef = useRef(null);
   const navigate = useNavigate();
 
-  // Initialize SpeechRecognition once on first start
+
   const initRecognition = () => {
     if (!("webkitSpeechRecognition" in window)) {
       alert("Web Speech API not supported in this browser.");
@@ -44,11 +45,9 @@ export default function FreeformInput({ setStructuredData }) {
 
   const toggleListening = () => {
     if (listening) {
-      // Stop if currently listening
       recognitionRef.current?.stop();
       setListening(false);
     } else {
-      // Start listening if not already started
       if (!recognitionRef.current) {
         recognitionRef.current = initRecognition();
       }
@@ -70,10 +69,30 @@ export default function FreeformInput({ setStructuredData }) {
   };
 
   const handlePreview = () => {
-  localStorage.setItem('previewHtml', previewHtml);
-  navigate('/preview');
-};
+    localStorage.setItem('previewHtml', previewHtml);
+    navigate('/preview');
+  };
 
+  const handleFileUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file || file.type !== "application/pdf") {
+      alert("Please upload a valid PDF file.");
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append("resume", file);
+
+      const response = await uploadResumePdf(formData);
+      setText(response.text);  // assuming backend returns extracted text
+    } catch (error) {
+      alert("Error uploading resume");
+      console.error(error);
+    }
+    setUploading(false);
+  };
 
   return (
     <div className="my-6">
@@ -86,7 +105,7 @@ export default function FreeformInput({ setStructuredData }) {
         onChange={(e) => setText(e.target.value)}
       />
 
-      <div className="flex gap-2 mt-2">
+      <div className="flex flex-wrap gap-2 mt-2">
         <button
           onClick={toggleListening}
           className={`px-4 py-2 rounded text-white ${
@@ -103,6 +122,18 @@ export default function FreeformInput({ setStructuredData }) {
         >
           {loading ? "Analyzing..." : "Generate with AI"}
         </button>
+
+        <label className="bg-gray-700 text-white px-4 py-2 rounded cursor-pointer">
+          📄 Upload Resume
+          <input
+            type="file"
+            accept="application/pdf"
+            onChange={handleFileUpload}
+            className="hidden"
+          />
+        </label>
+
+        {uploading && <span className="text-sm text-gray-600">Uploading...</span>}
 
         {previewHtml && (
           <button

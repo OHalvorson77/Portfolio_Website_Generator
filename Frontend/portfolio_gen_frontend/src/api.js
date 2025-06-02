@@ -33,4 +33,15 @@ export async function updateCode(text, code) {
   return html;
 }
 
+// POST /upload-resume
+export async function uploadResumePdf(formData) {
+  const response = await fetch("http://localhost:3000/upload-resume", {
+    method: "POST",
+    body: formData,
+  });
+  if (!response.ok) throw new Error("Upload failed");
+  return await response.json(); // should return: { text: "Extracted text" }
+}
+
+
 
